@@ -141,8 +141,13 @@ jobs:
           echo "Service ECS : $ECS_SERVICE"
 
           # 1. Recuperer la task definition en cours
-          SERVICE_DESC=$(aws ecs describe-services \
-            --cluster "$ECS_CLUSTER" --services "$ECS_SERVICE")
+          if ! SERVICE_DESC=$(aws ecs describe-services \
+            --cluster "$ECS_CLUSTER" --services "$ECS_SERVICE" 2> "$RUNNER_TEMP/describe-services.err"); then
+            echo "::error::AWS ne peut pas decrire le service ECS $ECS_SERVICE dans le cluster $ECS_CLUSTER."
+            cat "$RUNNER_TEMP/describe-services.err"
+            echo "::error::Causes probables: mauvais AWS_REGION, mauvais AWS_ROLE_TO_ASSUME/compte AWS, ou nom ECS_CLUSTER incorrect."
+            exit 1
+          fi
           FAILURES=$(echo "$SERVICE_DESC" | jq -r '.failures[]? | "\(.arn // .reason): \(.detail // .reason)"')
           if [ -n "$FAILURES" ]; then
             echo "::error::Service ECS introuvable ou inaccessible: $ECS_SERVICE dans le cluster $ECS_CLUSTER"
