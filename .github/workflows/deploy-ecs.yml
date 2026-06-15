@@ -137,11 +137,26 @@ jobs:
           REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
           IMAGE="${REGISTRY}/${ECR_REPO}:${IMAGE_TAG}"
           echo "Image cible : $IMAGE"
+          echo "Cluster ECS : $ECS_CLUSTER"
+          echo "Service ECS : $ECS_SERVICE"
 
           # 1. Recuperer la task definition en cours
-          TD_ARN=$(aws ecs describe-services \
-            --cluster "$ECS_CLUSTER" --services "$ECS_SERVICE" \
-            --query 'services[0].taskDefinition' --output text)
+          SERVICE_DESC=$(aws ecs describe-services \
+            --cluster "$ECS_CLUSTER" --services "$ECS_SERVICE")
+          FAILURES=$(echo "$SERVICE_DESC" | jq -r '.failures[]? | "\(.arn // .reason): \(.detail // .reason)"')
+          if [ -n "$FAILURES" ]; then
+            echo "::error::Service ECS introuvable ou inaccessible: $ECS_SERVICE dans le cluster $ECS_CLUSTER"
+            echo "$FAILURES"
+            echo "::error::Verifie les variables GitHub ECS_CLUSTER, ECS_BACKEND_SERVICE, ECS_FRONTEND_SERVICE et AWS_REGION."
+            exit 1
+          fi
+
+          TD_ARN=$(echo "$SERVICE_DESC" | jq -r '.services[0].taskDefinition // empty')
+          if [ -z "$TD_ARN" ] || [ "$TD_ARN" = "None" ]; then
+            echo "::error::Impossible de trouver une task definition active pour $ECS_SERVICE dans $ECS_CLUSTER."
+            echo "::error::Le service ECS doit deja exister au moins une fois avant ce workflow de mise a jour."
+            exit 1
+          fi
           echo "Task definition actuelle : $TD_ARN"
 
           TD_JSON=$(aws ecs describe-task-definition \
