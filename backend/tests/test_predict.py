@@ -35,6 +35,13 @@ def test_predict_requires_authentication():
         assert r.status_code == 401
 
 
+def test_api_prefixed_predict_requires_authentication():
+    """Le prefixe /api doit atteindre la meme route que /predict."""
+    with TestClient(app) as client:
+        r = client.post("/api/predict", json={"symptoms": SYMPTOMS})
+        assert r.status_code == 401
+
+
 def test_predict_healthcare_fallback():
     """Vérifie le fallback HealthCare avec les 17 symptômes."""
     with TestClient(app) as client:

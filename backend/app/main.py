@@ -42,8 +42,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(health.router)
-app.include_router(items.router)
-app.include_router(predict.router)
-app.include_router(auth.router)
-app.include_router(admin.router)
+routers = (
+    health.router,
+    items.router,
+    predict.router,
+    auth.router,
+    admin.router,
+)
+
+for router in routers:
+    app.include_router(router)
+    app.include_router(router, prefix="/api")
