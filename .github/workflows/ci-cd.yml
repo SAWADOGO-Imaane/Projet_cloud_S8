@@ -157,7 +157,22 @@ jobs:
             echo "::notice::ECR désactivé. Configurer AWS_ROLE_TO_ASSUME pour activer le push ECR."
           else
             echo "push=true" >> $GITHUB_OUTPUT
+            echo "Role AWS cible : $AWS_ROLE_TO_ASSUME"
           fi
+
+      - name: Diagnostiquer les claims OIDC GitHub
+        if: steps.ecr-config.outputs.push == 'true'
+        env:
+          ROLE: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+        run: |
+          set -euo pipefail
+          TOKEN_JSON=$(curl -sSf \
+            -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=sts.amazonaws.com")
+          ID_TOKEN=$(echo "$TOKEN_JSON" | jq -r '.value')
+          PAYLOAD=$(echo "$ID_TOKEN" | cut -d. -f2)
+          PAYLOAD="$PAYLOAD" python3 -c 'import base64,json,os; p=os.environ["PAYLOAD"]; p += "="*((4-len(p)%4)%4); d=json.loads(base64.urlsafe_b64decode(p)); print("OIDC aud:", d.get("aud")); print("OIDC sub:", d.get("sub")); print("OIDC repository:", d.get("repository")); print("OIDC ref:", d.get("ref")); print("OIDC workflow:", d.get("workflow"))'
+          echo "Role AWS cible : $ROLE"
 
       - name: Configurer les identifiants AWS via OIDC
         if: steps.ecr-config.outputs.push == 'true'
