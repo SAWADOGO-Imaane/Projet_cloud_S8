@@ -159,8 +159,14 @@ jobs:
           fi
           echo "Task definition actuelle : $TD_ARN"
 
-          TD_JSON=$(aws ecs describe-task-definition \
-            --task-definition "$TD_ARN" --query 'taskDefinition')
+          if ! TD_JSON=$(aws ecs describe-task-definition \
+            --task-definition "$TD_ARN" --query 'taskDefinition' 2> "$RUNNER_TEMP/describe-td.err"); then
+            echo "::error::AWS ne peut pas decrire la task definition: $TD_ARN"
+            cat "$RUNNER_TEMP/describe-td.err"
+            echo "::error::Causes probables: task definition supprimee/inactive, mauvaise region AWS_REGION, ou role IAM sans permission ecs:DescribeTaskDefinition."
+            echo "::error::Verifie aussi que le service $ECS_SERVICE du cluster $ECS_CLUSTER pointe vers une task definition existante."
+            exit 1
+          fi
 
           # 2. Nettoyer les champs geres par AWS (non acceptes par register)
           CLEAN=$(echo "$TD_JSON" | jq 'del(
