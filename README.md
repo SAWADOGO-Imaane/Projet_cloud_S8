@@ -5,24 +5,24 @@
 
 **MicroScore** est un système de diagnostic médical intelligent conçu pour assister les professionnels de santé dans l'identification rapide de maladies respiratoires et intestinales courantes. L'application combine un modèle d'IA performant avec une architecture cloud robuste et sécurisée sur AWS.
 
-🔗 **Lien de l'application déployée** : [http://microscore-alb-875257365.eu-west-1.elb.amazonaws.com/](http://microscore-alb-875257365.eu-west-1.elb.amazonaws.com/)
+ **Lien de l'application déployée** : [http://microscore-alb-875257365.eu-west-1.elb.amazonaws.com/](http://microscore-alb-875257365.eu-west-1.elb.amazonaws.com/)
 
 ---
 
-## 🚀 Fonctionnalités Clés
+##  Fonctionnalités Clés
 
-### 🧠 Intelligence Artificielle & Diagnostic
+###  Intelligence Artificielle & Diagnostic
 - **Analyse des symptômes** : Évaluation de 17 symptômes clés pour générer des prédictions.
 - **Classification multi-maladie** : Détection de 6 pathologies (Rhume, Grippe, COVID-19, Bronchite, Pneumonie, Gastro-entérite).
 - **Score de confiance** : Chaque diagnostic est accompagné d'un indice de certitude issu du modèle ML.
 - **Modèle performant** : Utilisation d'un `RandomForestClassifier` avec une précision de **99,2%**.
 
-### 📊 Tableau de Bord Admin (Analytics)
+###  Tableau de Bord Admin (Analytics)
 - **KPIs Temps Réel** : Suivi du nombre total de diagnostics, confiance moyenne et tendances hebdomadaires.
 - **Visualisation de données** : Graphiques dynamiques (Recharts) montrant la distribution des maladies et l'évolution quotidienne.
 - **Historique complet** : Consultation détaillée de toutes les prédictions passées pour audit et analyse.
 
-### 🔐 Sécurité & Performance
+###  Sécurité & Performance
 - **Authentification OAuth 2.0** : Connexion sécurisée via Google Auth.
 - **Protection par Rate Limiting** : Limitation du débit (SlowAPI) pour prévenir le *model stealing* et les abus.
 - **RBAC (Role-Based Access Control)** : Accès restreint aux fonctionnalités administratives.
@@ -30,7 +30,7 @@
 
 ---
 
-## 🛠️ Stack Technique
+##  Stack Technique
 
 ### Backend
 - **Framework** : FastAPI (Python 3.11+)
@@ -52,7 +52,7 @@
 
 ---
 
-## 🏗️ Architecture Cloud
+##  Architecture Cloud
 
 Le projet propose deux stratégies de déploiement sur AWS, détaillées dans [`infra/aws/architecture.md`](infra/aws/architecture.md) :
 
@@ -72,7 +72,7 @@ graph LR
 
 ---
 
-## 💻 Installation Locale
+##  Installation Locale
 
 ### Prérequis
 - Docker & Docker Compose
@@ -91,7 +91,7 @@ docker compose up --build
 
 ---
 
-## 📂 Structure du Projet
+##  Structure du Projet
 
 ```text
 ├── backend/            # API FastAPI & Logique ML
@@ -105,7 +105,7 @@ docker compose up --build
 
 ---
 
-## 📝 Documentation Additionnelle
+##  Documentation Additionnelle
 
 - [Rapport de Projet Final](docs/livrable2/rapport-livrable2.md)
 - [Analyse des Risques et Coûts](docs/livrable1/rapport-livrable1.md)
